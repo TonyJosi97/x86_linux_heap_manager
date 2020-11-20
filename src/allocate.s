@@ -12,7 +12,7 @@
 
 # Stack location of the required size thats passed as
 # argument to the allocate function.
-.equ STACK_ALLOC_REQ_SIZE, 8
+.equ STACK_ALLOC_REQ_SIZE,                  8
 
 
 .section .text
@@ -47,6 +47,16 @@
         movl %esp, %ebp
 
         movl STACK_ALLOC_REQ_SIZE(%ebp), %ecx
+        movl $HEAP_START_ADDR, %eax
+        movl $CURRENT_BREAK_ADDR, %ebx
+
+        loop_search_unallocated_mem_begin:
+
+            cmpl %eax, %ebx
+            je request_more_mem_from_OS
+
+
+
 
         movl %ebp, %esp
         popl %ebp
