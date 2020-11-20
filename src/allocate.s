@@ -10,6 +10,10 @@
     CURRENT_BREAK_ADDR:
         .long 0
 
+# Stack location of the required size thats passed as
+# argument to the allocate function.
+.equ STACK_ALLOC_REQ_SIZE, 8
+
 
 .section .text
 
@@ -42,7 +46,7 @@
         pushl %ebp
         movl %esp, %ebp
 
-        
+        movl STACK_ALLOC_REQ_SIZE(%ebp), %ecx
 
         movl %ebp, %esp
         popl %ebp
