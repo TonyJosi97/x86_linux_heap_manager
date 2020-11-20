@@ -55,11 +55,61 @@
 
         loop_search_unallocated_mem_begin:
 
-            cmpl %eax, %ebx
+            cmpl %ebx, %eax
             je request_more_mem_from_OS
 
+            movl HP_MEM_HEADER_ALLOC_SIZE_OFFSET(%eax), %edx
 
+            cmpl $ALLOCATED, HP_MEM_HEADER_ALLOC_FLAG_OFFSET(%eax)
+            je move_to_next_location
 
+            cmpl %edx, %ecx
+            jle allocate_mem
 
-        movl %ebp, %esp
-        popl %ebp
+            move_to_next_location:
+                addl $HP_MEM_HEADER_SIZE, %eax
+                addl %edx, %eax
+                jmp loop_search_unallocated_mem_begin
+
+        allocate_mem:
+            movl $ALLOCATED, HP_MEM_HEADER_ALLOC_FLAG_OFFSET(%eax)
+            addl $HP_MEM_HEADER_SIZE, %eax
+            movl %ebp, %esp
+            popl %ebp             
+            ret
+
+        request_more_mem_from_OS:
+            addl $HP_MEM_HEADER_SIZE, %ebx      # Include the header size
+            addl %ecx, %ebx                     # Total requested memory
+
+            movl $SYSCALL_BRK, %eax
+
+            # Save registers
+            pushl %eax
+            pushl %ebx
+            pushl %ecx
+            
+            int $LINUX_SYSCALL
+
+            cmpl $0 ,%eax
+            je brk_error
+
+            popl %ecx
+            popl %ebx
+            popl %eax                           # Not interested in the new breakpoint
+
+            movl $ALLOCATED, HP_MEM_HEADER_ALLOC_FLAG_OFFSET(%eax)
+            movl %ecx, HP_MEM_HEADER_ALLOC_SIZE_OFFSET(%eax)
+
+            addl $HP_MEM_HEADER_SIZE, %eax
+            movl %ebx, $CURRENT_BREAK_ADDR
+
+            movl %ebp, %esp
+            popl %ebp
+            ret
+
+        brk_error:
+            movl $0, %eax
+            movl %ebp, %esp
+            popl %ebp
+            ret
