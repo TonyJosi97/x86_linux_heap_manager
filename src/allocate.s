@@ -1,3 +1,6 @@
+.include "linux_asm_defs.s"
+.include "heap_memory_header_struct.s"
+
 
 .section .data
 
