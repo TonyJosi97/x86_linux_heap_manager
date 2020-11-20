@@ -35,8 +35,8 @@
 
         incl %eax # Next address will be unused address
 
-        movl %eax, $CURRENT_BREAK_ADDR
-        movl %eax, $HEAP_START_ADDR
+        movl %eax, CURRENT_BREAK_ADDR
+        movl %eax, HEAP_START_ADDR
 
         movl %ebp, %esp
         popl %ebp
@@ -102,7 +102,7 @@
             movl %ecx, HP_MEM_HEADER_ALLOC_SIZE_OFFSET(%eax)
 
             addl $HP_MEM_HEADER_SIZE, %eax
-            movl %ebx, $CURRENT_BREAK_ADDR
+            movl %ebx, CURRENT_BREAK_ADDR
 
             movl %ebp, %esp
             popl %ebp
