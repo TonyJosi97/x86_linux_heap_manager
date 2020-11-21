@@ -82,13 +82,12 @@
             addl $HP_MEM_HEADER_SIZE, %ebx      # Include the header size
             addl %ecx, %ebx                     # Total requested memory
 
-            movl $SYSCALL_BRK, %eax
-
             # Save registers
             pushl %eax
             pushl %ebx
             pushl %ecx
             
+            movl $SYSCALL_BRK, %eax
             int $LINUX_SYSCALL
 
             cmpl $0 ,%eax
