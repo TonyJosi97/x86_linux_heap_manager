@@ -43,10 +43,9 @@
         call printf
         addl $4, %esp
 
-        # movl %ebp, %esp
-        # popl %ebp
-
         prog_exit:
+            movl %ebp, %esp
+            popl %ebp
             pushl $0
             call exit
 
